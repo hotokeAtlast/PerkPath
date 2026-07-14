@@ -127,7 +127,7 @@ export default function AdminDashboard({
     <div className="admin-view">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 className="text-gradient">FlowPlay Command Center</h1>
+          <h1 className="text-gradient">PerkPath Command Center</h1>
           <p style={{ color: 'var(--text-secondary)' }}>FIFA World Cup 2026 Operational Intelligence</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

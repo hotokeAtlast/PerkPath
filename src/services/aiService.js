@@ -10,7 +10,7 @@ const FALLBACK_OFFERS = {
 };
 
 const SYSTEM_PROMPT = `
-You are the "FlowPlay" AI engine for FIFA World Cup 2026.
+You are the "PerkPath" AI engine for FIFA World Cup 2026.
 Generate a SINGLE push notification (max 160 chars) to reroute a fan from a congested gate.
 
 RULES:
@@ -71,7 +71,7 @@ function generateFallback(language, targetGate, optimalGate, optimalPerk) {
 }
 
 /**
- * Service to handle Gemini API generation logic for FlowPlay.
+ * Service to handle Gemini API generation logic for PerkPath.
  */
 export const generateOffer = async (apiKey, targetGate, optimalGate, optimalPerk, fanLanguage) => {
   const finalKey = import.meta.env.VITE_GEMINI_API_KEY || apiKey;
@@ -104,7 +104,7 @@ CONTEXT:
     const validated = validateAndSanitize(response.text, targetGate, optimalGate, optimalPerk, fanLanguage);
     if (validated) return validated;
   } catch (err) {
-    console.warn('[FlowPlay] GenAI failed, using fallback:', err.message);
+    console.warn('[PerkPath] GenAI failed, using fallback:', err.message);
   }
 
   return generateFallback(fanLanguage, targetGate, optimalGate, optimalPerk);

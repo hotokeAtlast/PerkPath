@@ -2,20 +2,20 @@ import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { Ticket, MapPin, Zap, X, Globe, Volume2, Shield, Timer, CheckCircle, ChevronDown } from 'lucide-react';
 
 const translations = {
-  English: { welcome: 'Welcome, Fan', matchDay: 'Match Day: Final', navTarget: 'Navigation Target', walking: 'Walking towards', exclusive: 'FlowPlay Exclusive', accept: 'Accept Offer & Reroute', dismiss: 'Dismiss', audio: 'Play Audio', qrAlt: 'QR Code for redemption', expires: 'Expires', accessible: 'Screen reader active', gate: 'Gate', offerFor: 'Offer for', rerouteTo: 'Reroute to' },
-  Spanish: { welcome: 'Bienvenido, Fan', matchDay: 'Día de Partido: Final', navTarget: 'Objetivo de Navegación', walking: 'Caminando hacia', exclusive: 'Exclusivo FlowPlay', accept: 'Aceptar Oferta', dismiss: 'Descartar', audio: 'Reproducir Audio', qrAlt: 'Código QR para canjear', expires: 'Expira', accessible: 'Lector de pantalla activo', gate: 'Puerta', offerFor: 'Oferta para', rerouteTo: 'Redirigir a' },
-  French: { welcome: 'Bienvenue, Fan', matchDay: 'Jour de Match: Finale', navTarget: 'Cible de Navigation', walking: 'En marchant vers', exclusive: 'Exclusivité FlowPlay', accept: "Accepter l'Offre", dismiss: 'Ignorer', audio: 'Lire Audio', qrAlt: 'Code QR pour échange', expires: 'Expire', accessible: 'Lecteur d\'écran actif', gate: 'Porte', offerFor: 'Offre pour', rerouteTo: 'Rediriger vers' },
-  German: { welcome: 'Willkommen, Fan', matchDay: 'Spieltag: Finale', navTarget: 'Navigationsziel', walking: 'Gehend zum', exclusive: 'FlowPlay Exklusiv', accept: 'Angebot annehmen', dismiss: 'Abbrechen', audio: 'Audio abspielen', qrAlt: 'QR-Code zur Einlösung', expires: 'Läuft ab', accessible: 'Screenreader aktiv', gate: 'Tor', offerFor: 'Angebot für', rerouteTo: 'Umleiten zu' },
-  Japanese: { welcome: 'ようこそ、ファンの皆様', matchDay: '試合当日: 決勝', navTarget: 'ナビゲーション先', walking: 'に向かって歩行中', exclusive: 'FlowPlay限定', accept: 'オファーを受ける', dismiss: '閉じる', audio: '音声再生', qrAlt: '引換用QRコード', expires: '期限', accessible: 'スクリーンリーダー対応', gate: 'ゲート', offerFor: 'オファー対象', rerouteTo: '経路変更先' },
-  Portuguese: { welcome: 'Bem-vindo, Fã', matchDay: 'Dia do Jogo: Final', navTarget: 'Destino de Navegação', walking: 'Caminhando para', exclusive: 'Exclusivo FlowPlay', accept: 'Aceitar Oferta', dismiss: 'Dispensar', audio: 'Tocar Áudio', qrAlt: 'Código QR para resgate', expires: 'Expira', accessible: 'Leitor de tela ativo', gate: 'Portão', offerFor: 'Oferta para', rerouteTo: 'Redirecionar para' },
-  Arabic: { welcome: 'أهلاً بك يا مشجع', matchDay: 'يوم المباراة: النهائي', navTarget: 'هدف التنقل', walking: 'يسير نحو', exclusive: 'حصري FlowPlay', accept: 'قبول العرض', dismiss: 'تجاهل', audio: 'تشغيل الصوت', qrAlt: 'رمز QR للاستبدال', expires: 'ينتهي', accessible: 'قارئ الشاشة نشط', gate: 'بوابة', offerFor: 'عرض لـ', rerouteTo: 'إعادة توجيه إلى' },
+  English: { welcome: 'Welcome, Fan', matchDay: 'Match Day: Final', navTarget: 'Navigation Target', walking: 'Walking towards', exclusive: 'PerkPath Exclusive', accept: 'Accept Offer & Reroute', dismiss: 'Dismiss', audio: 'Play Audio', qrAlt: 'QR Code for redemption', expires: 'Expires', accessible: 'Screen reader active', gate: 'Gate', offerFor: 'Offer for', rerouteTo: 'Reroute to' },
+  Spanish: { welcome: 'Bienvenido, Fan', matchDay: 'Día de Partido: Final', navTarget: 'Objetivo de Navegación', walking: 'Caminando hacia', exclusive: 'Exclusivo PerkPath', accept: 'Aceptar Oferta', dismiss: 'Descartar', audio: 'Reproducir Audio', qrAlt: 'Código QR para canjear', expires: 'Expira', accessible: 'Lector de pantalla activo', gate: 'Puerta', offerFor: 'Oferta para', rerouteTo: 'Redirigir a' },
+  French: { welcome: 'Bienvenue, Fan', matchDay: 'Jour de Match: Finale', navTarget: 'Cible de Navigation', walking: 'En marchant vers', exclusive: 'Exclusivité PerkPath', accept: "Accepter l'Offre", dismiss: 'Ignorer', audio: 'Lire Audio', qrAlt: 'Code QR pour échange', expires: 'Expire', accessible: 'Lecteur d\'écran actif', gate: 'Porte', offerFor: 'Offre pour', rerouteTo: 'Rediriger vers' },
+  German: { welcome: 'Willkommen, Fan', matchDay: 'Spieltag: Finale', navTarget: 'Navigationsziel', walking: 'Gehend zum', exclusive: 'PerkPath Exklusiv', accept: 'Angebot annehmen', dismiss: 'Abbrechen', audio: 'Audio abspielen', qrAlt: 'QR-Code zur Einlösung', expires: 'Läuft ab', accessible: 'Screenreader aktiv', gate: 'Tor', offerFor: 'Angebot für', rerouteTo: 'Umleiten zu' },
+  Japanese: { welcome: 'ようこそ、ファンの皆様', matchDay: '試合当日: 決勝', navTarget: 'ナビゲーション先', walking: 'に向かって歩行中', exclusive: 'PerkPath限定', accept: 'オファーを受ける', dismiss: '閉じる', audio: '音声再生', qrAlt: '引換用QRコード', expires: '期限', accessible: 'スクリーンリーダー対応', gate: 'ゲート', offerFor: 'オファー対象', rerouteTo: '経路変更先' },
+  Portuguese: { welcome: 'Bem-vindo, Fã', matchDay: 'Dia do Jogo: Final', navTarget: 'Destino de Navegação', walking: 'Caminhando para', exclusive: 'Exclusivo PerkPath', accept: 'Aceitar Oferta', dismiss: 'Dispensar', audio: 'Tocar Áudio', qrAlt: 'Código QR para resgate', expires: 'Expira', accessible: 'Leitor de tela ativo', gate: 'Portão', offerFor: 'Oferta para', rerouteTo: 'Redirecionar para' },
+  Arabic: { welcome: 'أهلاً بك يا مشجع', matchDay: 'يوم المباراة: النهائي', navTarget: 'هدف التنقل', walking: 'يسير نحو', exclusive: 'حصري PerkPath', accept: 'قبول العرض', dismiss: 'تجاهل', audio: 'تشغيل الصوت', qrAlt: 'رمز QR للاستبدال', expires: 'ينتهي', accessible: 'قارئ الشاشة نشط', gate: 'بوابة', offerFor: 'عرض لـ', rerouteTo: 'إعادة توجيه إلى' },
 };
 
 const RTL_LANGUAGES = ['Arabic'];
 
 function generateQRCodeData(gateFrom, gateTo, perk) {
-  const payload = { type: 'FLOWPLAY_REDEEM', from: gateFrom, to: gateTo, perk, ts: Date.now(), nonce: Math.random().toString(36).slice(2, 10) };
-  return `https://flowplay.fifa2026.com/redeem?data=${btoa(JSON.stringify(payload))}`;
+  const payload = { type: 'PERKPATH_REDEEM', from: gateFrom, to: gateTo, perk, ts: Date.now(), nonce: Math.random().toString(36).slice(2, 10) };
+  return `https://perkpath.fifa2026.com/redeem?data=${btoa(JSON.stringify(payload))}`;
 }
 
 function QRCodeCanvas({ data, size = 128 }) {
@@ -83,7 +83,7 @@ function QRCodeCanvas({ data, size = 128 }) {
     ctx.font = 'bold 18px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('FP', qrSize/2, qrSize/2 + 6);
+    ctx.fillText('PP', qrSize/2, qrSize/2 + 6);
   }, [data, size]);
   return <canvas ref={canvasRef} width={size} height={size} style={{ borderRadius: '8px', border: '2px solid #000' }} />;
 }
