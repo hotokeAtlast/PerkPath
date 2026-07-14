@@ -16,6 +16,7 @@ function App() {
   const [targetGate, setTargetGate] = useState('Gate C');
   
   const [offer, setOffer] = useState(null);
+  const [offerMeta, setOfferMeta] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [lastOfferData, setLastOfferData] = useState(null);
   
@@ -52,6 +53,7 @@ function App() {
 
   const handleAcceptSimulation = () => {
     setOffer(null);
+    setOfferMeta(null);
     setCongestion(targetGate, Math.max(0, gates[targetGate].congestion - 20));
   };
 
@@ -91,6 +93,7 @@ function App() {
       );
 
       setOffer(generatedText);
+      setOfferMeta({ optimalGate, optimalPerk });
     } catch (error) {
       console.error(error);
       if (error.message === 'API_KEY_MISSING') {
@@ -150,8 +153,9 @@ function App() {
         setFanLanguage={setFanLanguage}
         targetGate={targetGate}
         offer={offer}
+        offerMeta={offerMeta}
         onAcceptOffer={handleAcceptSimulation}
-        onDismissOffer={() => setOffer(null)}
+        onDismissOffer={() => { setOffer(null); setOfferMeta(null); }}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-# PerkPath (PerkPath) — FIFA World Cup 2026
+# PerkPath — FIFA World Cup 2026
 
 **Submission for Virtual Prompt Wars Challenge 4**
 

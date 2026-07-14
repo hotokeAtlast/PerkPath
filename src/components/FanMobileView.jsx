@@ -93,6 +93,7 @@ export default function FanMobileView({
   setFanLanguage,
   targetGate,
   offer,
+  offerMeta,
   onAcceptOffer,
   onDismissOffer
 }) {
@@ -146,11 +147,11 @@ export default function FanMobileView({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Parse offer for QR data
-  const offerData = offer ? {
+  // Build QR data from structured offer metadata (no text parsing needed)
+  const offerData = offerMeta ? {
     from: targetGate,
-    to: offer.includes('Gate A') ? 'Gate A' : offer.includes('Gate B') ? 'Gate B' : 'Gate C',
-    perk: offer.match(/(\d+% off [^.]+|[^.]+)/)?.[0] || 'Exclusive Offer'
+    to: offerMeta.optimalGate,
+    perk: offerMeta.optimalPerk
   } : null;
 
   const qrData = offerData ? generateQRCodeData(offerData.from, offerData.to, offerData.perk) : null;

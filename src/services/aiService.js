@@ -7,6 +7,7 @@ const FALLBACK_OFFERS = {
   German: 'VIP-ALARM: {targetGate} ist überfüllt. Sofort zu {optimalGate} umleiten für {optimalPerk} — exklusives Angebot läuft in 5 Minuten ab!',
   Japanese: 'VIPアラート: {targetGate}は満員です。{optimalGate}へ今すぐ経路変更で{optimalPerk}を獲得 — 限定オファーは5分で期限切れ！',
   Portuguese: 'ALERTA VIP: {targetGate} está lotado. Redirecione para {optimalGate} AGORA para {optimalPerk} — oferta exclusiva expira em 5 minutos!',
+  Arabic: '!تنبيه VIP: {targetGate} ممتلئ. أعد التوجيه إلى {optimalGate} الآن لـ {optimalPerk} — العرض الحصري ينتهي خلال 5 دقائق',
 };
 
 const SYSTEM_PROMPT = `
