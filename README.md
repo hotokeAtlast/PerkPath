@@ -289,6 +289,12 @@ npm run dev
 
 Open `http://localhost:5173/`
 
+### Admin Access
+
+> **Admin PIN: `012026`**
+>
+> Click the **Ops** button on the fan page, or navigate to `/admin` and enter the 6-digit PIN to access the Command Center.
+
 ### Demo Flow for Judges
 
 1. **Fan Page** (`/`) — See ticket card, gate congestion grid, language selector
