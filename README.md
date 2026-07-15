@@ -221,7 +221,7 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 | Test Case | Expected Result | Status |
 |-----------|-----------------|--------|
 | Fan page loads at `/` | Ticket card, gate grid, language selector visible | Pass |
-| Admin page loads at `/admin` | PIN gate appears, enter WC2026 | Pass |
+| Admin page loads at `/admin` | PIN gate appears, enter 012026 | Pass |
 | Language switch (7 languages) | All UI text translates, RTL works for Arabic | Pass |
 | Trigger AI offer | Gemini generates localized offer, QR code, TTS available | Pass |
 | Accept offer | Congestion drops, metrics update, event logged | Pass |
