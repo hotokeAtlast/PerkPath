@@ -189,7 +189,7 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 
 | Measure | Detail |
 |---------|--------|
-| **API Key Handling** | Never committed to git (.env in .gitignore). Optional env var or secure modal (localStorage only). |
+| **API Key Handling** | Visitor provides their own Gemini API key on first load. Stored in localStorage only, never committed to git. |
 | **Admin Auth** | 6-digit numeric PIN (012026), sessionStorage-only, no backend persistence |
 | **Session Management** | Admin auth clears on tab close. No persistent admin sessions. |
 | **Input Sanitization** | All AI output validated against JSON schema before rendering |
@@ -267,7 +267,7 @@ src/
 
 ### Prerequisites
 - Node.js 18+
-- Google Gemini API Key (free tier: 20 req/day) from [Google AI Studio](https://aistudio.google.com)
+- A Google Gemini API key (free tier: 20 req/day) — you'll be prompted to enter one when the app loads
 
 ### Setup
 
@@ -279,15 +279,15 @@ cd PerkPath
 # Install
 npm install
 
-# Configure (optional — app prompts for key if missing)
-cp .env.example .env
-# Edit .env: VITE_GEMINI_API_KEY=your_key_here
-
 # Run
 npm run dev
 ```
 
 Open `http://localhost:5173/`
+
+### API Key
+
+When the app loads, you'll see a prompt to enter your **Gemini API key**. Get a free one at [aistudio.google.com/apikey](https://aistudio.google.com/apikey). Your key is stored in your browser's localStorage only — never sent anywhere except Google's Gemini API, and cleared when you close the tab.
 
 ### Admin Access
 

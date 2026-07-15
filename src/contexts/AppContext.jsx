@@ -44,9 +44,9 @@ export function AppProvider({ children }) {
   const [autoPilot, setAutoPilot] = useState(false);
   const autoPilotRunning = useRef(false);
 
-  const hasEnvKey = !!import.meta.env.VITE_GEMINI_API_KEY;
+  const hasEnvKey = false;
   const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
-  const [showConfigModal, setShowConfigModal] = useState(!hasEnvKey && !localStorage.getItem('gemini_api_key'));
+  const [showConfigModal, setShowConfigModal] = useState(!localStorage.getItem('gemini_api_key'));
   const [errorMsg, setErrorMsg] = useState('');
 
   const addEvent = useCallback((type, message, level = 'info') => {
