@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { generateOffer, generateAutoPilotDecision, generateMockScenario, getApiQuota } from '../services/aiService';
 
 const AppContext = createContext(null);
@@ -17,7 +17,7 @@ const INITIAL_GATES = {
 function getFanId() {
   let id = localStorage.getItem('perkpath_fan_id');
   if (!id) {
-    const gate = Object.keys(INITIAL_GATES)[Math.floor(Math.random() * 4)];
+    const gate = Object.keys(INITIAL_GATES)[Math.floor(Math.random() * Object.keys(INITIAL_GATES).length)];
     const num = Math.floor(Math.random() * 9000) + 1000;
     id = `FAN-${gate}-2026-${num}`;
     localStorage.setItem('perkpath_fan_id', id);
@@ -44,7 +44,7 @@ export function AppProvider({ children }) {
   const [autoPilot, setAutoPilot] = useState(false);
   const autoPilotRunning = useRef(false);
 
-  const hasEnvKey = false;
+  const hasEnvKey = !!import.meta.env.VITE_GEMINI_API_KEY;
   const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
   const [showConfigModal, setShowConfigModal] = useState(!localStorage.getItem('gemini_api_key'));
   const [errorMsg, setErrorMsg] = useState('');
@@ -138,7 +138,6 @@ export function AppProvider({ children }) {
       setOffer(generatedText);
       addEvent('dispatch', `Push sent to fan ${fanId} (${fanLanguage}): "${generatedText.slice(0, 60)}..."`);
     } catch (error) {
-      console.error(error);
       if (error.message === 'API_KEY_MISSING') {
         setShowConfigModal(true);
       } else if (error.message?.includes('503') || error.message?.includes('UNAVAILABLE')) {

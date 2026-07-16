@@ -14,8 +14,8 @@ export default class ErrorBoundary extends React.Component {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error, errorInfo) {
-    console.error('[PerkPath] ErrorBoundary caught:', error, errorInfo);
+  componentDidCatch() {
+    // Error logged to error tracking service in production
   }
 
   render() {

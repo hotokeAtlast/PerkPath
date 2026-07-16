@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Ticket, MapPin, Zap, X, Globe, Volume2, Timer, CheckCircle, ChevronDown, Settings } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
@@ -82,7 +82,7 @@ const translations = {
 };
 
 function QRCodeCanvas({ data, size = 100 }) {
-  const canvasRef = React.useRef(null);
+  const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -141,7 +141,7 @@ export default function FanPage() {
   const { gates, targetGate, offer, offerMeta, fanLanguage, setFanLanguage, fanId, triggerAI, handleAcceptOffer, dismissOffer, isGenerating, errorMsg, setErrorMsg } = useApp();
   const navigate = useNavigate();
   const [langOpen, setLangOpen] = useState(false);
-  const langRef = React.useRef(null);
+  const langRef = useRef(null);
 
   const isRTL = RTL_LANGUAGES.includes(fanLanguage);
   const t = translations[fanLanguage];

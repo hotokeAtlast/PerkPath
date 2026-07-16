@@ -46,7 +46,6 @@ async function withRetry(fn, maxRetries = 2, baseDelay = 1000) {
       const is503 = err?.message?.includes('503') || err?.message?.includes('UNAVAILABLE') || err?.message?.includes('high demand');
       if (is503 && attempt < maxRetries) {
         const delay = baseDelay * Math.pow(2, attempt);
-        console.warn(`[PerkPath] API 503, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
         await new Promise(r => setTimeout(r, delay));
         continue;
       }
@@ -150,7 +149,6 @@ function generateFallback(language, targetGate, optimalGate, optimalPerk) {
  */
 export const generateOffer = async (apiKey, targetGate, optimalGate, optimalPerk, fanLanguage) => {
   if (!hasQuota()) {
-    console.warn('[PerkPath] Quota exhausted, using fallback offer');
     return generateFallback(fanLanguage, targetGate, optimalGate, optimalPerk);
   }
 
@@ -195,8 +193,8 @@ CONTEXT:
 
     const validated = validateAndSanitize(response.text, targetGate, optimalGate);
     if (validated) return validated;
-  } catch (err) {
-    console.warn('[PerkPath] GenAI offer failed, using fallback:', err.message);
+  } catch {
+    // AI failed — use deterministic fallback
   }
 
   return generateFallback(fanLanguage, targetGate, optimalGate, optimalPerk);
@@ -250,7 +248,6 @@ function makeLocalDecision(gates) {
  */
 export const generateAutoPilotDecision = async (apiKey, gates) => {
   if (!hasQuota()) {
-    console.warn('[PerkPath] Quota exhausted, using local auto-pilot');
     return makeLocalDecision(gates);
   }
 
@@ -295,8 +292,8 @@ SCHEMA:
 
     const parsed = safeParseJson(response.text);
     if (parsed && parsed.action && parsed.reasoning) return parsed;
-  } catch (err) {
-    console.warn('[PerkPath] Auto-pilot error:', err.message);
+  } catch {
+    // Auto-pilot AI failed — use local decision engine
   }
 
   return makeLocalDecision(gates);
@@ -341,16 +338,14 @@ Rules: At least 2 gates above 75%, at least 3 with surplus=true. Output ONLY the
     // Try to extract gates if nested differently
     if (parsed) {
       const keys = Object.keys(parsed);
-      console.warn('[PerkPath] Scenario parsed but no gates. Keys:', keys, 'Full:', JSON.stringify(parsed).slice(0, 300));
-      // Check if gates is nested under a different key
       for (const key of keys) {
         if (parsed[key] && typeof parsed[key] === 'object' && parsed[key].A1) {
           return { description: parsed.description || 'Match day simulation', gates: parsed[key] };
         }
       }
     }
-  } catch (err) {
-    console.warn('[PerkPath] Scenario generation error:', err.message);
+  } catch {
+    // Scenario generation failed
   }
 
   return null;

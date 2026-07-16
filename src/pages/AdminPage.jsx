@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Zap, TrendingUp, Users, Package, Terminal, Shield, BarChart3, Bell, ArrowLeft, Bot, Pause, RefreshCw } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';

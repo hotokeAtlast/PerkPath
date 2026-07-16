@@ -5,6 +5,12 @@
     "react/rules-of-hooks": "error",
     "react/only-export-components": ["warn", { "allowConstantExport": true }],
     "react/jsx-no-target-blank": "error",
-    "react/self-closing-comp": "warn"
+    "react/self-closing-comp": "warn",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "eqeqeq": "error",
+    "no-debugger": "error",
+    "no-case-declarations": "error",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "warn"
   }
 }
