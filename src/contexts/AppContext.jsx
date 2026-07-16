@@ -48,6 +48,16 @@ export function AppProvider({ children }) {
   const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
   const [showConfigModal, setShowConfigModal] = useState(!localStorage.getItem('gemini_api_key'));
   const [errorMsg, setErrorMsg] = useState('');
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = useCallback((title, message, type = 'info', duration = 5000) => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev.slice(-4), { id, title, message, type, duration }]);
+  }, []);
+
+  const dismissToast = useCallback((id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
 
   const addEvent = useCallback((type, message, level = 'info') => {
     setEventLog(prev => [{
@@ -131,14 +141,19 @@ export function AppProvider({ children }) {
       console.error(error);
       if (error.message === 'API_KEY_MISSING') {
         setShowConfigModal(true);
+      } else if (error.message?.includes('503') || error.message?.includes('UNAVAILABLE')) {
+        addToast('API Unavailable', 'Gemini API is experiencing high demand. Using fallback templates.', 'warning');
+        setErrorMsg('AI temporarily unavailable. Using fallback offer.');
+        addEvent('ai', `API 503 — fallback offer used`, 'warning');
       } else {
         setErrorMsg('AI Generation Failed. Check API key or network.');
         addEvent('ai', `ERROR: ${error.message}`, 'error');
+        addToast('AI Error', `Offer generation failed: ${error.message}`, 'error');
       }
     } finally {
       setIsGenerating(false);
     }
-  }, [gates, targetGate, fanLanguage, apiKey, fanId, addEvent]);
+  }, [gates, targetGate, fanLanguage, apiKey, fanId, addEvent, addToast]);
 
   const handleAcceptOffer = useCallback(() => {
     if (!offerMeta) return;
@@ -229,11 +244,18 @@ export function AppProvider({ children }) {
         addEvent('cv', `[AUTO-PILOT] Simulated congestion spike at ${decision.gateId}`, 'warning');
       }
     } catch (err) {
-      addEvent('ai', `[AUTO-PILOT] Error: ${err.message}`, 'error');
+      const is503 = err.message?.includes('503') || err.message?.includes('UNAVAILABLE');
+      if (is503) {
+        addToast('Auto-Pilot', 'Gemini API busy — using local decision engine', 'warning', 4000);
+        addEvent('ai', `[AUTO-PILOT] API 503 — using local fallback`, 'warning');
+      } else {
+        addEvent('ai', `[AUTO-PILOT] Error: ${err.message}`, 'error');
+        addToast('Auto-Pilot Error', err.message, 'error');
+      }
     } finally {
       autoPilotRunning.current = false;
     }
-  }, [gates, apiKey, fanId, addEvent]);
+  }, [gates, apiKey, fanId, addEvent, addToast]);
 
   const generateScenario = useCallback(async () => {
     const finalKey = import.meta.env.VITE_GEMINI_API_KEY || apiKey;
@@ -256,13 +278,21 @@ export function AppProvider({ children }) {
           return updated;
         });
         addEvent('ai', `Scenario loaded: ${scenario.description || 'Match day simulation'}`, 'success');
+        addToast('Scenario Loaded', scenario.description || 'Match day simulation loaded successfully', 'success', 4000);
       }
     } catch (err) {
-      addEvent('ai', `Scenario generation failed: ${err.message}`, 'error');
+      const is503 = err.message?.includes('503') || err.message?.includes('UNAVAILABLE');
+      if (is503) {
+        addToast('Scenario Failed', 'Gemini API busy — try again in a moment', 'warning');
+        addEvent('ai', 'Scenario generation: API 503 — unavailable', 'warning');
+      } else {
+        addEvent('ai', `Scenario generation failed: ${err.message}`, 'error');
+        addToast('Scenario Failed', err.message, 'error');
+      }
     } finally {
       setIsGenerating(false);
     }
-  }, [apiKey, addEvent]);
+  }, [apiKey, addEvent, addToast]);
 
   const runAutoPilotRef = useRef(runAutoPilot);
   runAutoPilotRef.current = runAutoPilot;
@@ -286,6 +316,7 @@ export function AppProvider({ children }) {
     errorMsg, setErrorMsg, addEvent, handleSaveApiKey, handleClearKey,
     updateGate, toggleSurplus, triggerAI, handleAcceptOffer, dismissOffer,
     runAutoPilot, generateScenario, INITIAL_GATES, apiQuota: getApiQuota(),
+    toasts, addToast, dismissToast,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
