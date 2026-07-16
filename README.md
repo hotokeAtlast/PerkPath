@@ -175,13 +175,16 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 | Feature | Implementation |
 |---------|----------------|
 | **Screen Reader** | ARIA live regions announce offers, gate status changes, errors |
-| **Keyboard Navigation** | Full tab order, focus-visible outlines, Enter/Space activation |
+| **Keyboard Navigation** | Full tab order, focus-visible outlines, Enter/Space activation, skip-to-content link |
 | **TTS Audio** | Web Speech API with per-language locale (en-US, es-ES, fr-FR, de-DE, ja-JP, pt-BR, ar-SA) |
 | **RTL Support** | Arabic triggers `direction: rtl` on entire fan page layout |
 | **Color Contrast** | Neon Lime (#ccff00) on dark (#0b0c10) = 12.5:1 ratio (exceeds AAA) |
 | **Reduced Motion** | `prefers-reduced-motion: reduce` disables all animations |
-| **Focus Management** | PIN gate auto-focuses first input, modals trap focus |
+| **Focus Management** | PIN gate auto-focuses first input, modals trap focus, aria-invalid on errors |
 | **High-Contrast QR** | Canvas-generated QR codes with #ccff00 on #000 (12.5:1) |
+| **Form Labels** | All form inputs have associated labels via htmlFor or aria-label |
+| **Error States** | aria-invalid, aria-describedby, and role="alert" for error announcements |
+| **Semantic HTML** | Proper heading hierarchy, landmark roles (banner, main), fieldset/legend for grouped inputs |
 
 ---
 
@@ -192,14 +195,25 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 | **API Key Handling** | Visitor provides their own Gemini API key on first load. Stored in localStorage only, never committed to git. |
 | **Admin Auth** | 6-digit numeric PIN (012026), sessionStorage-only, no backend persistence |
 | **Session Management** | Admin auth clears on tab close. No persistent admin sessions. |
-| **Input Sanitization** | All AI output validated against JSON schema before rendering |
+| **Input Sanitization** | All AI output validated against JSON schema before rendering. API key input sanitized against XSS characters. |
+| **Rate Limiting** | PIN entry limited to 5 attempts with 30-second lockout to prevent brute force. |
 | **No PII Collection** | Fan ID is auto-generated (FAN-{gate}-2026-{random}), stored in localStorage only |
-| **CSP Compatible** | No inline scripts, no eval(), no dynamic imports |
+| **CSP Compatible** | Content Security Policy headers set. No inline scripts, no eval(), no dynamic imports |
+| **Security Headers** | X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Referrer-Policy: strict-origin-when-cross-origin |
 | **XSS Prevention** | React's default JSX escaping + no dangerouslySetInnerHTML |
 
 ---
 
-## Efficiency
+## Code Quality
+
+| Feature | Implementation |
+|---------|----------------|
+| **Linting** | oxlint with react plugin, strict rules for hooks, JSX patterns |
+| **Error Handling** | ErrorBoundary component catches runtime errors with fallback UI |
+| **Documentation** | JSDoc comments on all exported functions and key internal functions |
+| **Test Coverage** | 36 tests across aiService, AuthContext, AppContext, PinGate, ApiKeyModal |
+| **State Management** | useCallback/useMemo for memoized functions, minimal re-renders |
+| **Security Rules** | ESLint/oxlint rules for dangerous patterns (eval, debugger, etc.) |
 
 | Metric | Value | Technique |
 |--------|-------|-----------|
@@ -239,6 +253,30 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 - **Lint:** oxlint (zero errors, 2 benign warnings)
 - **Build:** Vite production build passes clean
 - **Type Safety:** React 19 + JSX (no TypeScript, but prop patterns are consistent)
+- **Tests:** Vitest + @testing-library/react (36 tests, all passing)
+
+### Running Tests
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode (re-runs on file changes)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Coverage
+
+| Module | Tests | Coverage |
+|--------|-------|----------|
+| `aiService.js` | 12 | API quota, fallback templates, local decision logic, validation |
+| `AuthContext.jsx` | 7 | Login/logout, PIN validation, sessionStorage persistence |
+| `AppContext.jsx` | 5 | Gate initialization, metrics, event logging, state updates |
+| `PinGate.jsx` | 6 | PIN entry, error handling, rate limiting, authentication flow |
+| `ApiKeyModal.jsx` | 6 | Form validation, input sanitization, accessibility labels |
 
 ---
 

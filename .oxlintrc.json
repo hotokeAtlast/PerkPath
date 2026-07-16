@@ -3,6 +3,8 @@
   "plugins": ["react", "oxc"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "react/jsx-no-target-blank": "error",
+    "react/self-closing-comp": "warn"
   }
 }

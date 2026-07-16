@@ -167,14 +167,14 @@ export default function FanPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-color)', direction: isRTL ? 'rtl' : 'ltr' }}>
       {errorMsg && (
-        <div style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', background: 'var(--danger)', color: 'white', padding: '10px 20px', borderRadius: '8px', zIndex: 9999, fontSize: '13px' }}>
+        <div role="alert" aria-live="assertive" style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', background: 'var(--danger)', color: 'white', padding: '10px 20px', borderRadius: '8px', zIndex: 9999, fontSize: '13px' }}>
           {errorMsg}
           <button onClick={() => setErrorMsg('')} style={{ background: 'none', border: 'none', color: 'white', marginLeft: '12px', cursor: 'pointer' }}>×</button>
         </div>
       )}
 
       {/* Header */}
-      <header style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--surface-border)' }}>
+      <header role="banner" style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--surface-border)' }}>
         <div>
           <h1 style={{ fontSize: '20px', fontWeight: '700' }}>
             <span style={{ color: 'var(--primary-accent)' }}>Perk</span>Path
@@ -183,7 +183,7 @@ export default function FanPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div ref={langRef} style={{ position: 'relative' }}>
-            <button onClick={() => setLangOpen(!langOpen)} style={{
+            <button onClick={() => setLangOpen(!langOpen)} aria-label="Select language" aria-expanded={langOpen} aria-haspopup="listbox" style={{
               display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)',
               padding: '6px 12px', borderRadius: '20px', border: 'none', color: 'white', fontSize: '12px',
               cursor: 'pointer', fontFamily: 'inherit'
@@ -225,7 +225,7 @@ export default function FanPage() {
       </header>
 
       {/* Main Content */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', gap: '24px', maxWidth: '480px', margin: '0 auto', width: '100%' }}>
+      <main id="main-content" role="main" aria-label="Fan dashboard" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', gap: '24px', maxWidth: '480px', margin: '0 auto', width: '100%' }}>
         {/* Ticket Card */}
         <div className="glass-panel" style={{ width: '100%', padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
@@ -271,11 +271,11 @@ export default function FanPage() {
           borderTop: '2px solid var(--primary-accent)', borderRadius: '24px 24px 0 0',
           padding: '24px', boxShadow: '0 -10px 40px rgba(0,0,0,0.5)', animation: 'slideUp 0.4s cubic-bezier(0.16,1,0.3,1)'
         }} role="dialog" aria-modal="true" aria-labelledby="offer-title">
-          <button onClick={dismissOffer} style={{
+          <button onClick={dismissOffer} aria-label={t.dismiss} style={{
             position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.1)',
             border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', width: '32px', height: '32px',
             borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }} aria-label={t.dismiss}>
+          }}>
             <X size={20} />
           </button>
 

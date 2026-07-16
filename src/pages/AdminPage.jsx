@@ -73,11 +73,11 @@ export default function AdminPage() {
   const totalCongested = Object.values(gates).filter(g => g.congestion > 75).length;
 
   return (
-    <div className="admin-view">
+    <div className="admin-view" id="main-content" role="region" aria-label="Admin command center">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => navigate('/')} style={{
+          <button onClick={() => navigate('/')} aria-label="Back to fan view" style={{
             background: 'rgba(255,255,255,0.05)', border: '1px solid var(--surface-border)',
             borderRadius: '8px', padding: '8px', cursor: 'pointer', color: 'var(--text-secondary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -90,7 +90,7 @@ export default function AdminPage() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => setAutoPilot(!autoPilot)} style={{
+          <button onClick={() => setAutoPilot(!autoPilot)} aria-label={autoPilot ? 'Disable auto-pilot' : 'Enable auto-pilot'} aria-pressed={autoPilot} style={{
             display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '20px',
             border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold',
             background: autoPilot ? 'var(--primary-accent)' : 'rgba(255,255,255,0.05)',
@@ -116,7 +116,7 @@ export default function AdminPage() {
           }}>
             API: {apiQuota.used}/{apiQuota.limit}
           </span>
-          <button onClick={() => { logout(); navigate('/'); }} style={{
+          <button onClick={() => { logout(); navigate('/'); }} aria-label="Logout and return to fan view" style={{
             background: 'rgba(255,51,102,0.1)', color: 'var(--danger)', border: '1px solid var(--danger)',
             padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
           }}>Logout</button>
@@ -181,6 +181,10 @@ export default function AdminPage() {
                   <input type="range" min="0" max="100" value={data.congestion}
                     onChange={(e) => updateGate(id, 'congestion', parseInt(e.target.value))}
                     onClick={(e) => e.stopPropagation()}
+                    aria-label={`Congestion level for ${data.name}: ${data.congestion}%`}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={data.congestion}
                     style={{ width: '100%', accentColor: data.congestion > 75 ? 'var(--danger)' : 'var(--primary-accent)' }}
                   />
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px', fontSize: '10px', color: 'var(--text-secondary)' }}>
@@ -239,7 +243,7 @@ export default function AdminPage() {
                   {Object.entries(gates).slice(0, 4).map(([id, data]) => (
                     <div key={id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', fontSize: '11px' }}>
                       <span style={{ color: 'var(--text-secondary)' }}>{data.name}</span>
-                      <button onClick={() => toggleSurplus(id)} style={{
+                      <button onClick={() => toggleSurplus(id)} aria-label={`Toggle surplus for ${data.name}: ${data.surplus ? 'surplus' : 'OK'}`} aria-pressed={data.surplus} style={{
                         padding: '2px 8px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '10px', fontWeight: 'bold',
                         background: data.surplus ? 'var(--primary-accent)' : 'transparent',
                         color: data.surplus ? '#000' : 'var(--text-secondary)',
@@ -266,7 +270,7 @@ export default function AdminPage() {
                 <span style={{ color: 'var(--success)' }}>● REDEEM</span>
               </div>
             </div>
-            <div style={{ maxHeight: '250px', overflow: 'auto', fontFamily: 'monospace', fontSize: '11px', lineHeight: '1.5', background: 'rgba(0,0,0,0.4)', borderRadius: '8px', padding: '10px' }}>
+            <div aria-live="polite" aria-relevant="additions" style={{ maxHeight: '250px', overflow: 'auto', fontFamily: 'monospace', fontSize: '11px', lineHeight: '1.5', background: 'rgba(0,0,0,0.4)', borderRadius: '8px', padding: '10px' }}>
               {eventLog.length === 0 ? (
                 <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '30px', fontSize: '12px' }}>
                   Waiting for events...
