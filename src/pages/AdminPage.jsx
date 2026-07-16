@@ -117,10 +117,11 @@ export default function AdminPage() {
           }}>
             API: {apiQuota.used}/{apiQuota.limit}
           </span>
-          <button onClick={() => { logout(); navigate('/fan'); }} aria-label="Logout and return to fan view" style={{
+          <button onClick={() => { logout(); navigate('/fan'); }} aria-label="Logout and view fan experience" style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
             background: 'rgba(255,51,102,0.1)', color: 'var(--danger)', border: '1px solid var(--danger)',
             padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
-          }}>Logout</button>
+          }}><Shield size={12} />Logout</button>
         </div>
       </div>
 

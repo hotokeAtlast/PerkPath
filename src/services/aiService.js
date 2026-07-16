@@ -36,15 +36,17 @@ function getClient(apiKey) {
 
 /**
  * Retries an async function with exponential backoff.
- * Used to handle transient 503 errors from Gemini API.
+ * Handles transient 429 (rate limit) and 503 (unavailable) errors from Gemini API.
  */
-async function withRetry(fn, maxRetries = 2, baseDelay = 1000) {
+async function withRetry(fn, maxRetries = 3, baseDelay = 1500) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await fn();
     } catch (err) {
-      const is503 = err?.message?.includes('503') || err?.message?.includes('UNAVAILABLE') || err?.message?.includes('high demand');
-      if (is503 && attempt < maxRetries) {
+      const msg = err?.message || '';
+      const isRetryable = msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')
+        || msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('high demand');
+      if (isRetryable && attempt < maxRetries) {
         const delay = baseDelay * Math.pow(2, attempt);
         await new Promise(r => setTimeout(r, delay));
         continue;

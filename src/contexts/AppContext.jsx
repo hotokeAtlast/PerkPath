@@ -140,7 +140,7 @@ export function AppProvider({ children }) {
     } catch (error) {
       if (error.message === 'API_KEY_MISSING') {
         setShowConfigModal(true);
-      } else if (error.message?.includes('503') || error.message?.includes('UNAVAILABLE')) {
+      } else if (error.message?.includes('503') || error.message?.includes('UNAVAILABLE') || error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED')) {
         addToast('API Unavailable', 'Gemini API is experiencing high demand. Using fallback templates.', 'warning');
         setErrorMsg('AI temporarily unavailable. Using fallback offer.');
         addEvent('ai', `API 503 — fallback offer used`, 'warning');
@@ -243,10 +243,11 @@ export function AppProvider({ children }) {
         addEvent('cv', `[AUTO-PILOT] Simulated congestion spike at ${decision.gateId}`, 'warning');
       }
     } catch (err) {
-      const is503 = err.message?.includes('503') || err.message?.includes('UNAVAILABLE');
-      if (is503) {
+      const isTransient = err.message?.includes('503') || err.message?.includes('UNAVAILABLE')
+        || err.message?.includes('429') || err.message?.includes('RESOURCE_EXHAUSTED');
+      if (isTransient) {
         addToast('Auto-Pilot', 'Gemini API busy — using local decision engine', 'warning', 4000);
-        addEvent('ai', `[AUTO-PILOT] API 503 — using local fallback`, 'warning');
+        addEvent('ai', `[AUTO-PILOT] API rate limit — using local fallback`, 'warning');
       } else {
         addEvent('ai', `[AUTO-PILOT] Error: ${err.message}`, 'error');
         addToast('Auto-Pilot Error', err.message, 'error');
@@ -280,10 +281,11 @@ export function AppProvider({ children }) {
         addToast('Scenario Loaded', scenario.description || 'Match day simulation loaded successfully', 'success', 4000);
       }
     } catch (err) {
-      const is503 = err.message?.includes('503') || err.message?.includes('UNAVAILABLE');
-      if (is503) {
-        addToast('Scenario Failed', 'Gemini API busy — try again in a moment', 'warning');
-        addEvent('ai', 'Scenario generation: API 503 — unavailable', 'warning');
+      const isTransient = err.message?.includes('503') || err.message?.includes('UNAVAILABLE')
+        || err.message?.includes('429') || err.message?.includes('RESOURCE_EXHAUSTED');
+      if (isTransient) {
+        addToast('Scenario Failed', 'Gemini API rate limited — try again in a moment', 'warning');
+        addEvent('ai', 'Scenario generation: API rate limited — unavailable', 'warning');
       } else {
         addEvent('ai', `Scenario generation failed: ${err.message}`, 'error');
         addToast('Scenario Failed', err.message, 'error');
