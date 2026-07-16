@@ -35,12 +35,23 @@ function getClient(apiKey) {
 }
 
 /**
+ * Safely parses JSON from Gemini API responses.
+ * Strips markdown code blocks and extra whitespace before parsing.
+ */
+function safeParseJson(text) {
+  let cleaned = text.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+  cleaned = cleaned.replace(/^[\s\S]*?(\{)/, '$1').replace(/(\})[\s\S]*$/, '$1');
+  return JSON.parse(cleaned);
+}
+
+/**
  * Validates AI response against schema and sanitizes output.
  */
 function validateAndSanitize(responseText, targetGate, optimalGate) {
   let parsed;
   try {
-    parsed = JSON.parse(responseText.trim());
+    parsed = safeParseJson(responseText);
   } catch {
     return null;
   }
@@ -221,7 +232,7 @@ SCHEMA:
       },
     });
 
-    const parsed = JSON.parse(response.text.trim());
+    const parsed = safeParseJson(response.text);
     if (parsed.action && parsed.reasoning) return parsed;
   } catch (err) {
     console.warn('[PerkPath] Auto-pilot error:', err.message);
@@ -246,10 +257,11 @@ Zones: A=North, B=East, C=South, D=West
 Types: A1=Public Entry, A2=VIP Entry, B1=Transit Hub, B2=Accessible, C1=Parking Entry, C2=Premium, D1=Media/VIP, D2=General
 
 RULES:
-- Output ONLY valid JSON, no markdown.
+- Output ONLY valid JSON, no markdown, no code blocks.
 - Make it realistic: at least 2 gates above 75% (bottlenecks), at least 3 gates with surplus=true.
 - Vendor items: Cold Drinks, Hot Dogs, Team Jerseys, Premium Snacks, Coffee, Nachos, Bottled Water, Popcorn.
 - Include a "description" field explaining the scenario.
+- Start response with { and end with }
 
 SCHEMA:
 {
@@ -271,7 +283,7 @@ SCHEMA:
       },
     });
 
-    const parsed = JSON.parse(response.text.trim());
+    const parsed = safeParseJson(response.text);
     if (parsed.gates) return parsed;
   } catch (err) {
     console.warn('[PerkPath] Scenario generation error:', err.message);
