@@ -305,6 +305,10 @@ export const getApiQuota = () => ({ used: apiUsage.count, limit: DAILY_LIMIT, re
  * Generates a realistic match-day scenario via Gemini.
  */
 export const generateMockScenario = async (apiKey) => {
+  if (!hasQuota()) {
+    return null;
+  }
+
   const { ai } = getClient(apiKey);
 
   const prompt = `Generate a realistic FIFA World Cup 2026 match-day scenario for a stadium with 8 gates.
@@ -322,6 +326,7 @@ Return exactly this JSON structure, nothing else:
 Rules: At least 2 gates above 75%, at least 3 with surplus=true. Output ONLY the JSON object.`;
 
   try {
+    trackUsage();
     const response = await withRetry(() => ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
