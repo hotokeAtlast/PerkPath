@@ -36,25 +36,65 @@ function getClient(apiKey) {
 
 /**
  * Safely parses JSON from Gemini API responses.
- * Strips markdown code blocks and extra whitespace before parsing.
+ * Handles markdown code blocks, double-encoded strings, and extra text.
  */
 function safeParseJson(text) {
-  let cleaned = text.trim();
-  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
-  cleaned = cleaned.replace(/^[\s\S]*?(\{)/, '$1').replace(/(\})[\s\S]*$/, '$1');
-  return JSON.parse(cleaned);
+  if (!text) return null;
+
+  let cleaned = String(text).trim();
+
+  // Strip markdown code blocks: ```json ... ``` or ``` ... ```
+  cleaned = cleaned.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?\s*```\s*$/i, '');
+
+  // Try parsing as-is first
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    // continue to fallback strategies
+  }
+
+  // Handle double-encoded: the entire response is a JSON string containing JSON
+  // e.g. '{"description":"..."}' wrapped in extra quotes
+  try {
+    const decoded = JSON.parse(cleaned);
+    if (typeof decoded === 'string') {
+      return JSON.parse(decoded);
+    }
+    // If decoded is already an object, return it
+    if (typeof decoded === 'object' && decoded !== null) {
+      return decoded;
+    }
+  } catch {
+    // continue
+  }
+
+  // Extract JSON object by finding first { and last }
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    const jsonStr = cleaned.substring(firstBrace, lastBrace + 1);
+    try {
+      return JSON.parse(jsonStr);
+    } catch {
+      // continue
+    }
+  }
+
+  // Last resort: try to fix common issues like trailing commas
+  try {
+    const fixed = cleaned.replace(/,\s*([\]}])/g, '$1');
+    return JSON.parse(fixed);
+  } catch {
+    return null;
+  }
 }
 
 /**
  * Validates AI response against schema and sanitizes output.
  */
 function validateAndSanitize(responseText, targetGate, optimalGate) {
-  let parsed;
-  try {
-    parsed = safeParseJson(responseText);
-  } catch {
-    return null;
-  }
+  const parsed = safeParseJson(responseText);
+  if (!parsed) return null;
 
   if (
     !parsed.offer ||
@@ -233,7 +273,7 @@ SCHEMA:
     });
 
     const parsed = safeParseJson(response.text);
-    if (parsed.action && parsed.reasoning) return parsed;
+    if (parsed && parsed.action && parsed.reasoning) return parsed;
   } catch (err) {
     console.warn('[PerkPath] Auto-pilot error:', err.message);
   }
@@ -284,7 +324,8 @@ SCHEMA:
     });
 
     const parsed = safeParseJson(response.text);
-    if (parsed.gates) return parsed;
+    if (parsed && parsed.gates) return parsed;
+    console.warn('[PerkPath] Scenario JSON parsed but no gates found. Response:', response.text?.slice(0, 200));
   } catch (err) {
     console.warn('[PerkPath] Scenario generation error:', err.message);
   }
