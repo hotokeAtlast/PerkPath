@@ -35,6 +35,27 @@ function getClient(apiKey) {
 }
 
 /**
+ * Retries an async function with exponential backoff.
+ * Used to handle transient 503 errors from Gemini API.
+ */
+async function withRetry(fn, maxRetries = 2, baseDelay = 1000) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const is503 = err?.message?.includes('503') || err?.message?.includes('UNAVAILABLE') || err?.message?.includes('high demand');
+      if (is503 && attempt < maxRetries) {
+        const delay = baseDelay * Math.pow(2, attempt);
+        console.warn(`[PerkPath] API 503, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
+/**
  * Safely parses JSON from Gemini API responses.
  * Handles markdown code blocks, double-encoded strings, and extra text.
  */
@@ -162,7 +183,7 @@ CONTEXT:
 
   try {
     trackUsage();
-    const response = await ai.models.generateContent({
+    const response = await withRetry(() => ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
@@ -170,7 +191,7 @@ CONTEXT:
         maxOutputTokens: 120,
         responseMimeType: 'application/json',
       },
-    });
+    }));
 
     const validated = validateAndSanitize(response.text, targetGate, optimalGate);
     if (validated) return validated;
@@ -262,7 +283,7 @@ SCHEMA:
 
   try {
     trackUsage();
-    const response = await ai.models.generateContent({
+    const response = await withRetry(() => ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
@@ -270,7 +291,7 @@ SCHEMA:
         maxOutputTokens: 150,
         responseMimeType: 'application/json',
       },
-    });
+    }));
 
     const parsed = safeParseJson(response.text);
     if (parsed && parsed.action && parsed.reasoning) return parsed;
@@ -304,7 +325,7 @@ Return exactly this JSON structure, nothing else:
 Rules: At least 2 gates above 75%, at least 3 with surplus=true. Output ONLY the JSON object.`;
 
   try {
-    const response = await ai.models.generateContent({
+    const response = await withRetry(() => ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
@@ -312,7 +333,7 @@ Rules: At least 2 gates above 75%, at least 3 with surplus=true. Output ONLY the
         maxOutputTokens: 800,
         responseMimeType: 'application/json',
       },
-    });
+    }));
 
     const parsed = safeParseJson(response.text);
     if (parsed && parsed.gates) return parsed;
