@@ -198,7 +198,7 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 | **Input Sanitization** | All AI output validated against JSON schema before rendering. API key input sanitized against XSS characters. |
 | **Rate Limiting** | PIN entry limited to 5 attempts with 30-second lockout to prevent brute force. |
 | **No PII Collection** | Fan ID is auto-generated (FAN-{gate}-2026-{random}), stored in localStorage only |
-| **CSP Compatible** | Content Security Policy headers set. No inline scripts, no eval(), no dynamic imports |
+| **CSP Compatible** | Content-Security-Policy header: default-src 'self', script-src 'self', connect-src restricted to Google Gemini API, font-src restricted to Google Fonts |
 | **Security Headers** | X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Referrer-Policy: strict-origin-when-cross-origin |
 | **XSS Prevention** | React's default JSX escaping + no dangerouslySetInnerHTML |
 
@@ -208,16 +208,17 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 
 | Feature | Implementation |
 |---------|----------------|
-| **Linting** | oxlint with react plugin, strict rules for hooks, JSX patterns |
+| **Linting** | oxlint with react + oxc plugins: hooks, JSX patterns, eqeqeq, no-debugger, no-unused-vars, no-case-declarations |
 | **Error Handling** | ErrorBoundary component catches runtime errors with fallback UI |
 | **Documentation** | JSDoc comments on all exported functions and key internal functions |
-| **Test Coverage** | 36 tests across aiService, AuthContext, AppContext, PinGate, ApiKeyModal |
+| **Test Coverage** | 49 tests across 7 modules (aiService, AuthContext, AppContext, PinGate, ApiKeyModal, Toast, ErrorBoundary) |
 | **State Management** | useCallback/useMemo for memoized functions, minimal re-renders |
-| **Security Rules** | ESLint/oxlint rules for dangerous patterns (eval, debugger, etc.) |
+| **Dead Code Removal** | Zero unused imports, zero console statements in production, zero dead files |
+| **Security Rules** | oxlint rules for dangerous patterns (eval, debugger, eqeqeq) |
 
 | Metric | Value | Technique |
 |--------|-------|-----------|
-| **Bundle Size** | ~940KB (246KB gzip) | Vite tree-shaking, code splitting ready |
+| **Bundle Size** | ~950KB (250KB gzip) | Vite tree-shaking, code splitting ready |
 | **LCP** | <2s | Static assets, font preloading, minimal JS |
 | **GenAI Latency** | <800ms per call | Gemini 2.5 Flash, temperature 0.3, max 150 tokens |
 | **Auto-Pilot Cycle** | 30s interval | useRef stable callback, no unnecessary re-renders |
@@ -250,10 +251,10 @@ When Gemini quota is exhausted, the **local fallback engine** takes over using d
 
 ### Automated Quality
 
-- **Lint:** oxlint (zero errors, 2 benign warnings)
+- **Lint:** oxlint (zero errors, 2 benign warnings for hook-style exports)
 - **Build:** Vite production build passes clean
-- **Type Safety:** React 19 + JSX (no TypeScript, but prop patterns are consistent)
-- **Tests:** Vitest + @testing-library/react (36 tests, all passing)
+- **Tests:** Vitest + @testing-library/react (49 tests across 7 modules, all passing)
+- **Dead Code:** Zero unused imports, zero console statements, zero dead files
 
 ### Running Tests
 
@@ -274,9 +275,11 @@ npm run test:coverage
 |--------|-------|----------|
 | `aiService.js` | 12 | API quota, fallback templates, local decision logic, validation |
 | `AuthContext.jsx` | 7 | Login/logout, PIN validation, sessionStorage persistence |
-| `AppContext.jsx` | 5 | Gate initialization, metrics, event logging, state updates |
+| `AppContext.jsx` | 9 | Gate initialization, metrics, event logging, state updates, auto-pilot, language |
 | `PinGate.jsx` | 6 | PIN entry, error handling, rate limiting, authentication flow |
 | `ApiKeyModal.jsx` | 6 | Form validation, input sanitization, accessibility labels |
+| `Toast.jsx` | 6 | Auto-dismiss, manual dismiss, multiple toasts, accessibility |
+| `ErrorBoundary.jsx` | 3 | Error catching, fallback UI, refresh button |
 
 ---
 
@@ -285,16 +288,28 @@ npm run test:coverage
 ```
 src/
 ├── services/
-│   └── aiService.js              # Gemini integration, guardrails, fallback, rate limiting
+│   ├── aiService.js              # Gemini integration, guardrails, fallback, rate limiting
+│   └── aiService.test.js         # 12 tests: quota, fallback, local decisions, validation
 ├── contexts/
-│   ├── AppContext.jsx             # All app state: gates, offers, metrics, auto-pilot
-│   └── AuthContext.jsx            # Admin PIN authentication (sessionStorage)
+│   ├── AppContext.jsx             # All app state: gates, offers, metrics, auto-pilot, toasts
+│   ├── AppContext.test.jsx        # 9 tests: gates, metrics, events, state, auto-pilot
+│   ├── AuthContext.jsx            # Admin PIN authentication (sessionStorage)
+│   └── AuthContext.test.jsx       # 7 tests: login, logout, PIN, sessionStorage
 ├── pages/
-│   ├── FanPage.jsx               # Fan experience: ticket, gates, offer overlay, QR, TTS
+│   ├── FanPage.jsx                # Fan experience: ticket, gates, offer overlay, QR, TTS
 │   └── AdminPage.jsx             # Command center: KPIs, gates, vendor auction, event log
 ├── components/
-│   └── PinGate.jsx               # 6-digit PIN entry with focus management
-├── App.jsx                        # Thin shell: providers + React Router
+│   ├── PinGate.jsx               # 6-digit PIN entry with focus management
+│   ├── PinGate.test.jsx          # 6 tests: PIN entry, error, rate limiting, auth
+│   ├── ApiKeyModal.jsx           # API key input with sanitization and focus trap
+│   ├── ApiKeyModal.test.jsx      # 6 tests: form, validation, accessibility
+│   ├── Toast.jsx                 # Auto-dismissing notification system
+│   ├── Toast.test.jsx            # 6 tests: render, auto-dismiss, click, a11y
+│   ├── ErrorBoundary.jsx         # Runtime error boundary with fallback UI
+│   └── ErrorBoundary.test.jsx    # 3 tests: error catching, fallback, refresh
+├── test/
+│   └── setup.js                  # Vitest setup: jest-dom matchers
+├── App.jsx                        # Thin shell: providers + React Router + Toast
 ├── main.jsx                       # Entry: BrowserRouter + StrictMode
 └── index.css                      # Design system: glassmorphic UI, a11y, responsive
 ```
