@@ -156,6 +156,7 @@ export default function FanPage() {
 
   const speakOffer = useCallback(() => {
     if (!offer) return;
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const utterance = new SpeechSynthesisUtterance(offer);
     utterance.lang = fanLanguage === 'English' ? 'en-US' : fanLanguage === 'Spanish' ? 'es-ES' : fanLanguage === 'French' ? 'fr-FR' : fanLanguage === 'German' ? 'de-DE' : fanLanguage === 'Japanese' ? 'ja-JP' : fanLanguage === 'Portuguese' ? 'pt-BR' : 'ar-SA';
     utterance.rate = 0.95;

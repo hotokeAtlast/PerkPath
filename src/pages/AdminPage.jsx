@@ -158,11 +158,17 @@ export default function AdminPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
               {Object.entries(gates).map(([id, data]) => (
-                <div key={id} style={{
-                  background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '12px',
-                  border: `1px solid ${data.congestion > 75 ? 'rgba(255,51,102,0.3)' : 'rgba(255,255,255,0.05)'}`,
-                  cursor: 'pointer', transition: 'border-color 0.2s',
-                }} onClick={() => setTargetGate(id)}>
+                <div key={id} role="button" tabIndex={0}
+                  onClick={() => setTargetGate(id)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTargetGate(id); } }}
+                  style={{
+                    background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '12px',
+                    border: `1px solid ${data.congestion > 75 ? 'rgba(255,51,102,0.3)' : 'rgba(255,255,255,0.05)'}`,
+                    cursor: 'pointer', transition: 'border-color 0.2s', outline: 'none',
+                  }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--primary-accent)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = data.congestion > 75 ? 'rgba(255,51,102,0.3)' : 'rgba(255,255,255,0.05)'; }}
+                >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <div style={{
