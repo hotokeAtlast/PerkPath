@@ -296,21 +296,12 @@ Gate IDs: A1, A2, B1, B2, C1, C2, D1, D2
 Zones: A=North, B=East, C=South, D=West
 Types: A1=Public Entry, A2=VIP Entry, B1=Transit Hub, B2=Accessible, C1=Parking Entry, C2=Premium, D1=Media/VIP, D2=General
 
-RULES:
-- Output ONLY valid JSON, no markdown, no code blocks.
-- Make it realistic: at least 2 gates above 75% (bottlenecks), at least 3 gates with surplus=true.
-- Vendor items: Cold Drinks, Hot Dogs, Team Jerseys, Premium Snacks, Coffee, Nachos, Bottled Water, Popcorn.
-- Include a "description" field explaining the scenario.
-- Start response with { and end with }
+Vendor items to use: Cold Drinks, Hot Dogs, Team Jerseys, Premium Snacks, Coffee, Nachos, Bottled Water, Popcorn.
 
-SCHEMA:
-{
-  "description": "string",
-  "gates": {
-    "A1": { "congestion": "number", "vendorItem": "string", "surplus": "boolean" },
-    ...
-  }
-}`;
+Return exactly this JSON structure, nothing else:
+{"description":"your description","gates":{"A1":{"congestion":85,"vendorItem":"Cold Drinks","surplus":false},"A2":{"congestion":10,"vendorItem":"Premium Snacks","surplus":true},"B1":{"congestion":40,"vendorItem":"Hot Dogs","surplus":false},"B2":{"congestion":15,"vendorItem":"Coffee","surplus":true},"C1":{"congestion":92,"vendorItem":"Team Jerseys","surplus":false},"C2":{"congestion":25,"vendorItem":"Nachos","surplus":true},"D1":{"congestion":60,"vendorItem":"Bottled Water","surplus":false},"D2":{"congestion":50,"vendorItem":"Popcorn","surplus":true}}}
+
+Rules: At least 2 gates above 75%, at least 3 with surplus=true. Output ONLY the JSON object.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -318,14 +309,25 @@ SCHEMA:
       contents: prompt,
       config: {
         temperature: 0.5,
-        maxOutputTokens: 400,
+        maxOutputTokens: 800,
         responseMimeType: 'application/json',
       },
     });
 
     const parsed = safeParseJson(response.text);
     if (parsed && parsed.gates) return parsed;
-    console.warn('[PerkPath] Scenario JSON parsed but no gates found. Response:', response.text?.slice(0, 200));
+
+    // Try to extract gates if nested differently
+    if (parsed) {
+      const keys = Object.keys(parsed);
+      console.warn('[PerkPath] Scenario parsed but no gates. Keys:', keys, 'Full:', JSON.stringify(parsed).slice(0, 300));
+      // Check if gates is nested under a different key
+      for (const key of keys) {
+        if (parsed[key] && typeof parsed[key] === 'object' && parsed[key].A1) {
+          return { description: parsed.description || 'Match day simulation', gates: parsed[key] };
+        }
+      }
+    }
   } catch (err) {
     console.warn('[PerkPath] Scenario generation error:', err.message);
   }
