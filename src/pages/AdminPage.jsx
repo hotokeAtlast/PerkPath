@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Zap, TrendingUp, Users, Package, Terminal, Shield, BarChart3, Bell, ArrowLeft, Bot, Pause, RefreshCw } from 'lucide-react';
+import { Activity, Zap, TrendingUp, Users, Package, Terminal, Shield, BarChart3, Bell, Eye, Bot, Pause, RefreshCw } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -77,12 +77,13 @@ export default function AdminPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => navigate('/')} aria-label="Back to fan view" style={{
-            background: 'rgba(255,255,255,0.05)', border: '1px solid var(--surface-border)',
-            borderRadius: '8px', padding: '8px', cursor: 'pointer', color: 'var(--text-secondary)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          <button onClick={() => navigate('/fan')} aria-label="View fan experience" style={{
+            display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(138,43,226,0.15)',
+            padding: '6px 12px', borderRadius: '20px', border: 'none', color: 'var(--secondary-accent)',
+            fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit'
           }}>
-            <ArrowLeft size={18} />
+            <Eye size={14} />
+            Fan View
           </button>
           <div>
             <h1 className="text-gradient" style={{ fontSize: '24px' }}>PerkPath Command Center</h1>
@@ -116,7 +117,7 @@ export default function AdminPage() {
           }}>
             API: {apiQuota.used}/{apiQuota.limit}
           </span>
-          <button onClick={() => { logout(); navigate('/'); }} aria-label="Logout and return to fan view" style={{
+          <button onClick={() => { logout(); navigate('/fan'); }} aria-label="Logout and return to fan view" style={{
             background: 'rgba(255,51,102,0.1)', color: 'var(--danger)', border: '1px solid var(--danger)',
             padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
           }}>Logout</button>

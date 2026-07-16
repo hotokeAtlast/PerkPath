@@ -214,7 +214,7 @@ export default function FanPage() {
               </div>
             )}
           </div>
-          <button onClick={() => navigate('/admin')} style={{
+          <button onClick={() => navigate('/')} style={{
             display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(138,43,226,0.15)',
             padding: '6px 12px', borderRadius: '20px', border: 'none', color: 'var(--secondary-accent)',
             fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit'

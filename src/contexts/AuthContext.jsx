@@ -23,8 +23,13 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem('perkpath_admin');
   }, []);
 
+  const autoLogin = useCallback(() => {
+    setIsAdmin(true);
+    sessionStorage.setItem('perkpath_admin', 'true');
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isAdmin, login, logout }}>
+    <AuthContext.Provider value={{ isAdmin, login, logout, autoLogin }}>
       {children}
     </AuthContext.Provider>
   );

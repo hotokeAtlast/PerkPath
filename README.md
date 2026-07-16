@@ -344,24 +344,22 @@ When the app loads, you'll see a prompt to enter your **Gemini API key**. Get a 
 
 ### Admin Access
 
-> **Admin PIN: `012026`**
->
-> Click the **Ops** button on the fan page, or navigate to `/admin` and enter the 6-digit PIN to access the Command Center.
+Admin is the **default view** — the root `/` loads the Command Center directly. No PIN required for this demo (API key is the only gate).
 
 ### Demo Flow for Judges
 
-1. **Fan Page** (`/`) — See ticket card, gate congestion grid, language selector
-2. **Switch to Arabic** — RTL layout activates, all text translates to Arabic
-3. **Click "Ops" button** — Navigate to admin (or go to `/admin`)
-4. **Enter PIN: 012026** — Access command center
-5. **Drag Gate C1 to 90%** — Bottleneck indicator appears
-6. **Toggle Auto-Pilot ON** — Watch full pipeline execute every 30s:
+1. **Visit `/`** — Command Center loads, API key modal appears
+2. **Enter your Gemini API key** — Free key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (20 req/day). Auto-authenticates as admin.
+3. **Drag Gate C1 to 90%** — Bottleneck indicator appears
+4. **Toggle Auto-Pilot ON** — Watch full pipeline execute every 30s:
    - AI analyzes stadium state
    - Vendor auction runs
    - Offer generated and displayed
    - Auto-accepted after 3s
    - Metrics update, event logged
-7. **Switch language on fan page** — Offers generate in selected language
+5. **Click "Fan View"** — Navigate to fan experience at `/fan`
+6. **Switch language** — RTL for Arabic, all text translates, TTS available
+7. **Request VIP Offer** — Gemini generates localized push notification with QR code
 8. **Check API counter** — Shows usage (e.g., "API: 5/20")
 9. **When quota exhausted** — Auto-pilot continues with local fallback logic
 
