@@ -46,7 +46,7 @@ export function AppProvider({ children }) {
 
   const hasEnvKey = !!import.meta.env.VITE_GEMINI_API_KEY;
   const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
-  const [showConfigModal, setShowConfigModal] = useState(!localStorage.getItem('gemini_api_key'));
+  const [showConfigModal, setShowConfigModal] = useState(!hasEnvKey && !localStorage.getItem('gemini_api_key'));
   const [errorMsg, setErrorMsg] = useState('');
   const [toasts, setToasts] = useState([]);
 

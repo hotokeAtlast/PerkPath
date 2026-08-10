@@ -184,7 +184,7 @@ CONTEXT:
   try {
     trackUsage();
     const response = await withRetry(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: prompt,
       config: {
         temperature: 0.3,
@@ -283,7 +283,7 @@ SCHEMA:
   try {
     trackUsage();
     const response = await withRetry(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: prompt,
       config: {
         temperature: 0.3,
@@ -330,7 +330,7 @@ Rules: At least 2 gates above 75%, at least 3 with surplus=true. Output ONLY the
   try {
     trackUsage();
     const response = await withRetry(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.5-flash-lite',
       contents: prompt,
       config: {
         temperature: 0.5,
